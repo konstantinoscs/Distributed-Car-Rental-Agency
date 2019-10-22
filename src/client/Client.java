@@ -5,11 +5,14 @@ import java.rmi.registry.Registry;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import rental.*;
+import rental.AgencyInterface;
+import rental.CarType;
+import rental.ManagerSession;
+import rental.Reservation;
+import rental.ReservationSession;
 
-public class Client<ReservationSession, ManagerSession> extends AbstractTestManagement<ReservationSession, ManagerSession> {
+public class Client extends AbstractTestManagement<ReservationSession, ManagerSession> {
 
     /********
      * MAIN *
@@ -19,10 +22,6 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
     private final static int REMOTE = 1;
 
     private AgencyInterface carAgency;
-    private ReservationSession reservationSession;
-    private ManagerSession managerSession;
-
-
 
     /**
      * The `main` method is used to launch the client application and run the test
@@ -48,7 +47,7 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
         super(scriptFile);
 
         String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
-        Registry namingRegistry = null;
+        Registry namingRegistry;
         int port = 10447;
         if (localOrRemote == REMOTE) {
             namingRegistry = LocateRegistry.getRegistry(host, port);
@@ -65,55 +64,122 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
 
     @Override
     protected ReservationSession getNewReservationSession(String name) throws Exception {
-
+        ReservationSession reservationSession;
+        try {
+            reservationSession =  carAgency.getNewReservationSession(name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't get a new reservation session.");
+        }
+        return reservationSession;
     }
 
     @Override
     protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
-
+        ManagerSession managerSession;
+        try {
+            managerSession = carAgency.getNewManagerSession(name, carRentalName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't get a new manager session.");
+        }
+        return managerSession;
     }
 
     @Override
     protected Set<String> getBestClients(ManagerSession ms) throws Exception {
+        Set<String> bestClients;
+        try {
+            bestClients = carAgency.getBestClients(ms);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't get the best clients.");
+        }
+        return bestClients;
 
     }
 
     @Override
-    protected String getCheapestCarType(ReservationSession session, Date start,
-                                        Date end, String region) throws Exception {
+    protected String getCheapestCarType(ReservationSession session, Date start, Date end, String region) throws Exception {
+        String cheapestCarType;
+        try {
+            cheapestCarType = carAgency.getCheapestCarType(session, start, end, region);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't get the cheapest car type.");
+        }
+        return cheapestCarType;
 
     }
 
     @Override
     protected CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) throws Exception {
-
+        CarType carType;
+        try {
+            carType = carAgency.getMostPopularCarTypeIn(ms, carRentalCompanyName, year);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't get the most popular car type.");
+        }
+        return carType;
     }
 
     @Override
     protected int getNumberOfReservationsByRenter(ManagerSession ms, String clientName) throws Exception {
-
+        int numberOfReservationsByRenter;
+        try {
+            numberOfReservationsByRenter = carAgency.getNumberOfReservationsByRenter(ms, clientName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't get the number of reservations by renter.");
+        }
+        return numberOfReservationsByRenter;
     }
 
     @Override
     protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception {
-
+        int numberOfReservationsForCarType;
+        try {
+            numberOfReservationsForCarType = carAgency.getNumberOfReservationsForCarType(ms, carRentalName, carType);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't get the number of reservations for car type.");
+        }
+        return numberOfReservationsForCarType;
     }
 
 
 
     @Override
     protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {
-
+        try {
+            carAgency.checkForAvailableCarTypes(session, start, end);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't check for available car types.");
+        }
     }
 
     @Override
-    protected void addQuoteToSession(ReservationSession session, String name,
-                                     Date start, Date end, String carType, String region) throws Exception {
-
+    protected void addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region) throws Exception {
+        try {
+            carAgency.addQuoteToSession(session, name, start, end, carType, region);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't add quote to session.");
+        }
     }
 
     @Override
     protected List<Reservation> confirmQuotes(ReservationSession session, String name) throws Exception {
+        List<Reservation> reservations;
+        try {
+            reservations = carAgency.confirmQuotes(session, name);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't confirm quotes.");
+        }
+        return reservations;
 
     }
 
