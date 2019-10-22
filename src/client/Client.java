@@ -18,7 +18,11 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
     private final static int LOCAL = 0;
     private final static int REMOTE = 1;
 
-    private RentalInterface carRentalCompany;
+    private AgencyInterface carAgency;
+    private ReservationSession reservationSession;
+    private ManagerSession managerSession;
+
+
 
     /**
      * The `main` method is used to launch the client application and run the test
@@ -29,10 +33,10 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
         // indicates whether the application is run on the remote setup or not.
         int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
 
-        String carRentalCompanyName = "Hertz";
+        String carAgencyCompanyName = "CarRentals";
 
         // An example reservation scenario on car rental company 'Hertz' would be...
-        Client client = new Client("trips", carRentalCompanyName, localOrRemote);
+        Client client = new Client("trips", carAgencyCompanyName, localOrRemote);
         client.run();
     }
 
@@ -40,7 +44,7 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
      * CONSTRUCTOR *
      ***************/
 
-    public Client(String scriptFile, String carRentalCompanyName, int localOrRemote) throws Exception {
+    public Client(String scriptFile, String carAgencyCompanyName, int localOrRemote) throws Exception {
         super(scriptFile);
 
         String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
@@ -53,7 +57,7 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
         }
 
         try {
-            carRentalCompany = (RentalInterface) namingRegistry.lookup(carRentalCompanyName);
+            carAgency = (AgencyInterface) namingRegistry.lookup(carAgencyCompanyName);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -24,11 +24,11 @@ public class RentalServer {
         // The first argument passed to the `main` method (if present)
         // indicates whether the application is run on the remote setup or not.
         int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
-        String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
+        // String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
         int rmiPort = 10448;
-        CrcData data = loadData("hertz.csv");
-        CarRentalCompany carRentalCompany = new CarRentalCompany(data.name, data.regions, data.cars);
-        RentalInterface stub = (RentalInterface) UnicastRemoteObject.exportObject(carRentalCompany, rmiPort);
+        //CrcData data = loadData("hertz.csv");
+        CarRentalAgency carRentalAgency = new CarRentalAgency();
+        AgencyInterface stub = (AgencyInterface) UnicastRemoteObject.exportObject(carRentalAgency, rmiPort);
         Registry namingRegistry = null;
 
         int registryPort = 10447;
@@ -39,7 +39,7 @@ public class RentalServer {
         }
 
         try {
-            namingRegistry.rebind("Hertz", stub);
+            namingRegistry.rebind("CarRentals", stub);
         } catch (Exception e) {
             e.printStackTrace();
         }
