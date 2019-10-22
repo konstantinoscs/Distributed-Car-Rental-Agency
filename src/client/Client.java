@@ -8,11 +8,11 @@ import java.util.Set;
 
 import rental.AgencyInterface;
 import rental.CarType;
-import rental.ManagerSession;
+import rental.ManagerSessionInterface;
 import rental.Reservation;
-import rental.ReservationSession;
+import rental.ReservationSessionInterface;
 
-public class Client extends AbstractTestManagement<ReservationSession, ManagerSession> {
+public class Client<ReservationSession extends ReservationSessionInterface, ManagerSession extends ManagerSessionInterface> extends AbstractTestManagement<ReservationSession, ManagerSession> {
 
     /********
      * MAIN *
@@ -32,10 +32,10 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
         // indicates whether the application is run on the remote setup or not.
         int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
 
-        String carAgencyCompanyName = "CarRentals";
+        String carAgencyName = "CarRentals";
 
         // An example reservation scenario on car rental company 'Hertz' would be...
-        Client client = new Client("trips", carAgencyCompanyName, localOrRemote);
+        Client<ReservationSessionInterface, ManagerSessionInterface> client = new Client<>("trips", carAgencyName, localOrRemote);
         client.run();
     }
 
@@ -43,7 +43,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
      * CONSTRUCTOR *
      ***************/
 
-    public Client(String scriptFile, String carAgencyCompanyName, int localOrRemote) throws Exception {
+    public Client(String scriptFile, String carAgencyName, int localOrRemote) throws Exception {
         super(scriptFile);
 
         String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
@@ -56,7 +56,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
         }
 
         try {
-            carAgency = (AgencyInterface) namingRegistry.lookup(carAgencyCompanyName);
+            carAgency = (AgencyInterface) namingRegistry.lookup(carAgencyName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -66,7 +66,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
     protected ReservationSession getNewReservationSession(String name) throws Exception {
         ReservationSession reservationSession;
         try {
-            reservationSession =  carAgency.getNewReservationSession(name);
+            reservationSession = (ReservationSession) carAgency.getNewReservationSession(name);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get a new reservation session.");
@@ -78,7 +78,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
     protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
         ManagerSession managerSession;
         try {
-            managerSession = carAgency.getNewManagerSession(name, carRentalName);
+            managerSession = (ManagerSession) carAgency.getNewManagerSession(name, carRentalName);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get a new manager session.");
@@ -90,7 +90,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
     protected Set<String> getBestClients(ManagerSession ms) throws Exception {
         Set<String> bestClients;
         try {
-            bestClients = carAgency.getBestClients(ms);
+            bestClients = ms.getBestClients();
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get the best clients.");
@@ -103,7 +103,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
     protected String getCheapestCarType(ReservationSession session, Date start, Date end, String region) throws Exception {
         String cheapestCarType;
         try {
-            cheapestCarType = carAgency.getCheapestCarType(session, start, end, region);
+            cheapestCarType = session.getCheapestCarType(start, end, region);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get the cheapest car type.");
@@ -116,7 +116,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
     protected CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) throws Exception {
         CarType carType;
         try {
-            carType = carAgency.getMostPopularCarTypeIn(ms, carRentalCompanyName, year);
+            carType = ms.getMostPopularCarTypeIn(carRentalCompanyName, year);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get the most popular car type.");
@@ -126,9 +126,9 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
     @Override
     protected int getNumberOfReservationsByRenter(ManagerSession ms, String clientName) throws Exception {
-        int numberOfReservationsByRenter;
+        int numberOfReservationsByRenter = 0;
         try {
-            numberOfReservationsByRenter = carAgency.getNumberOfReservationsByRenter(ms, clientName);
+            numberOfReservationsByRenter = ms.getNumberOfReservationsByRenter(clientName);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get the number of reservations by renter.");
@@ -138,9 +138,9 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
 
     @Override
     protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception {
-        int numberOfReservationsForCarType;
+        int numberOfReservationsForCarType = 0;
         try {
-            numberOfReservationsForCarType = carAgency.getNumberOfReservationsForCarType(ms, carRentalName, carType);
+            numberOfReservationsForCarType = ms.getNumberOfReservationsForCarType(carRentalName, carType);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get the number of reservations for car type.");
@@ -153,7 +153,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
     @Override
     protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {
         try {
-            carAgency.checkForAvailableCarTypes(session, start, end);
+            session.checkForAvailableCarTypes(start, end);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't check for available car types.");
@@ -163,7 +163,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
     @Override
     protected void addQuoteToSession(ReservationSession session, String name, Date start, Date end, String carType, String region) throws Exception {
         try {
-            carAgency.addQuoteToSession(session, name, start, end, carType, region);
+            session.addQuoteToSession(name, start, end, carType, region);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't add quote to session.");
@@ -174,7 +174,7 @@ public class Client extends AbstractTestManagement<ReservationSession, ManagerSe
     protected List<Reservation> confirmQuotes(ReservationSession session, String name) throws Exception {
         List<Reservation> reservations;
         try {
-            reservations = carAgency.confirmQuotes(session, name);
+            reservations = session.confirmQuotes(name);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't confirm quotes.");

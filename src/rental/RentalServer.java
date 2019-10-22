@@ -9,10 +9,7 @@ import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class RentalServer {
 
@@ -20,14 +17,14 @@ public class RentalServer {
     private final static int REMOTE = 1;
 
     public static void main(String[] args) throws ReservationException,
-            NumberFormatException, IOException {
+            NumberFormatException, IOException, Exception {
         // The first argument passed to the `main` method (if present)
         // indicates whether the application is run on the remote setup or not.
         int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
         // String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
         int rmiPort = 10448;
         //CrcData data = loadData("hertz.csv");
-        CarRentalAgency carRentalAgency = new CarRentalAgency();
+        CarRentalAgency carRentalAgency = new CarRentalAgency(new ArrayList<>(), LOCAL);
         AgencyInterface stub = (AgencyInterface) UnicastRemoteObject.exportObject(carRentalAgency, rmiPort);
         Registry namingRegistry = null;
 

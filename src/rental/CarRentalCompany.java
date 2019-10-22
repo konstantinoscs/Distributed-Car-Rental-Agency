@@ -28,7 +28,7 @@ public class CarRentalCompany implements RentalInterface {
      * CONSTRUCTOR *
      ***************/
 
-    public CarRentalCompany(String name, List<String> regions, List<Car> cars) throws RemoteException {
+    public CarRentalCompany(String name, List<String> regions, List<Car> cars) {
         super();
         logger.log(Level.INFO, "<{0}> Car Rental Company {0} starting up...", name);
         setName(name);
