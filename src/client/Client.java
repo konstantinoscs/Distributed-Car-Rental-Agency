@@ -64,6 +64,16 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
     }
 
     @Override
+    protected ReservationSession getNewReservationSession(String name) throws Exception {
+
+    }
+
+    @Override
+    protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
+
+    }
+
+    @Override
     protected Set<String> getBestClients(ManagerSession ms) throws Exception {
 
     }
@@ -80,14 +90,16 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
     }
 
     @Override
-    protected ReservationSession getNewReservationSession(String name) throws Exception {
+    protected int getNumberOfReservationsByRenter(ManagerSession ms, String clientName) throws Exception {
 
     }
 
     @Override
-    protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
+    protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception {
 
     }
+
+
 
     @Override
     protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {
@@ -105,14 +117,6 @@ public class Client<ReservationSession, ManagerSession> extends AbstractTestMana
 
     }
 
-    @Override
-    protected int getNumberOfReservationsByRenter(ManagerSession ms, String clientName) throws Exception {
-
-    }
-
-    protected int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception {
-
-    }
 
 
     /**
