@@ -11,7 +11,7 @@ public interface ReservationSessionInterface extends Remote, Serializable {
 
     void checkForAvailableCarTypes(Date start, Date end) throws RemoteException;
 
-    void addQuoteToSession(String name, Date start, Date end, String carType, String region) throws RemoteException;
+    void addQuoteToSession(String name, Date start, Date end, String carType, String region) throws Exception;
 
-    List<Reservation> confirmQuotes(String name) throws RemoteException;
+    List<Reservation> confirmQuotes(String name) throws ReservationException, RemoteException;
 }

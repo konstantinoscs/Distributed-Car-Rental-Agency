@@ -22,6 +22,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
     private final static int REMOTE = 1;
 
     private AgencyInterface carAgency;
+    private Registry namingRegistry;
 
     /**
      * The `main` method is used to launch the client application and run the test
@@ -47,16 +48,16 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         super(scriptFile);
 
         String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
-        Registry namingRegistry;
+
         int port = 10447;
         if (localOrRemote == REMOTE) {
-            namingRegistry = LocateRegistry.getRegistry(host, port);
+            this.namingRegistry = LocateRegistry.getRegistry(host, port);
         } else {
-            namingRegistry = LocateRegistry.getRegistry();
+            this.namingRegistry = LocateRegistry.getRegistry();
         }
 
         try {
-            carAgency = (AgencyInterface) namingRegistry.lookup(carAgencyName);
+            carAgency = (AgencyInterface) this.namingRegistry.lookup(carAgencyName);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -64,18 +65,21 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
 
     @Override
     protected ReservationSession getNewReservationSession(String name) throws Exception {
+        String reservationSessionId;
         ReservationSession reservationSession;
         try {
-            reservationSession = (ReservationSession) carAgency.getNewReservationSession(name);
+            reservationSessionId = carAgency.getNewReservationSession(name);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get a new reservation session.");
         }
+        reservationSession = (ReservationSession) this.namingRegistry.lookup(reservationSessionId);
         return reservationSession;
     }
 
     @Override
     protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
+        String managerSessionId;
         ManagerSession managerSession;
         try {
             managerSession = (ManagerSession) carAgency.getNewManagerSession(name, carRentalName);
@@ -96,19 +100,6 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
             throw new Exception("Couldn't get the best clients.");
         }
         return bestClients;
-
-    }
-
-    @Override
-    protected String getCheapestCarType(ReservationSession session, Date start, Date end, String region) throws Exception {
-        String cheapestCarType;
-        try {
-            cheapestCarType = session.getCheapestCarType(start, end, region);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("Couldn't get the cheapest car type.");
-        }
-        return cheapestCarType;
 
     }
 
@@ -148,7 +139,18 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         return numberOfReservationsForCarType;
     }
 
+    @Override
+    protected String getCheapestCarType(ReservationSession session, Date start, Date end, String region) throws Exception {
+        String cheapestCarType;
+        try {
+            cheapestCarType = session.getCheapestCarType(start, end, region);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Couldn't get the cheapest car type.");
+        }
+        return cheapestCarType;
 
+    }
 
     @Override
     protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {

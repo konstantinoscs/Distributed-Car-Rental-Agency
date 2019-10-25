@@ -16,25 +16,27 @@ public class RentalServer {
     private final static int LOCAL = 0;
     private final static int REMOTE = 1;
 
-    public static void main(String[] args) throws ReservationException,
-            NumberFormatException, IOException, Exception {
+    public static void main(String[] args) throws Exception {
         // The first argument passed to the `main` method (if present)
         // indicates whether the application is run on the remote setup or not.
         int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
-        // String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
-        int rmiPort = 10448;
-        //CrcData data = loadData("hertz.csv");
-        CarRentalAgency carRentalAgency = new CarRentalAgency(new ArrayList<>(), LOCAL);
-        AgencyInterface stub = (AgencyInterface) UnicastRemoteObject.exportObject(carRentalAgency, rmiPort);
-        Registry namingRegistry = null;
-
         int registryPort = 10447;
+        Registry namingRegistry;
         if (localOrRemote == REMOTE) {
             namingRegistry = LocateRegistry.getRegistry(registryPort);
         } else {
             namingRegistry = LocateRegistry.getRegistry();
         }
 
+        int rmiPort = 10448;
+        List<String> carRentalCompanies = new ArrayList<>();
+        carRentalCompanies.add(createAndRegisterCarRentalCompany(namingRegistry, rmiPort, "hertz.csv"));
+        carRentalCompanies.add(createAndRegisterCarRentalCompany(namingRegistry, rmiPort, "dockx.csv"));
+        System.out.println("Ready To create\n");
+        CarRentalAgency carRentalAgency = new CarRentalAgency(carRentalCompanies, localOrRemote);
+        AgencyInterface stub = (AgencyInterface) UnicastRemoteObject.exportObject(carRentalAgency, rmiPort);
+        System.out.println("Ready To register\n");
+        //register the CarRentalAgency
         try {
             namingRegistry.rebind("CarRentals", stub);
         } catch (Exception e) {
@@ -43,8 +45,17 @@ public class RentalServer {
 
     }
 
+    //method to create CarRentalCompanies and register them
+    private static String createAndRegisterCarRentalCompany(final Registry namingRegistry, int rmiPort, final String datafile) throws IOException {
+        CrcData data = loadData(datafile);
+        CarRentalCompany carRentalCompany = new CarRentalCompany(data.name, data.regions, data.cars);
+        RentalInterface stub = (RentalInterface) UnicastRemoteObject.exportObject(carRentalCompany, rmiPort);
+        namingRegistry.rebind(data.name, stub);
+        return data.name;
+    }
+
     public static CrcData loadData(String datafile)
-            throws ReservationException, NumberFormatException, IOException {
+            throws NumberFormatException, IOException {
 
         CrcData out = new CrcData();
         int nextuid = 0;
