@@ -22,20 +22,14 @@ public class RentalServer {
         int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
         int registryPort = 10447;
         Registry namingRegistry;
-        if (localOrRemote == REMOTE) {
-            namingRegistry = LocateRegistry.getRegistry(registryPort);
-        } else {
-            namingRegistry = LocateRegistry.getRegistry();
-        }
+        namingRegistry = localOrRemote == REMOTE ? LocateRegistry.getRegistry(registryPort) : LocateRegistry.getRegistry();
 
         int rmiPort = 10448;
         List<String> carRentalCompanies = new ArrayList<>();
         carRentalCompanies.add(createAndRegisterCarRentalCompany(namingRegistry, rmiPort, "hertz.csv"));
         carRentalCompanies.add(createAndRegisterCarRentalCompany(namingRegistry, rmiPort, "dockx.csv"));
-        System.out.println("Ready To create\n");
         CarRentalAgency carRentalAgency = new CarRentalAgency(carRentalCompanies, localOrRemote);
         AgencyInterface stub = (AgencyInterface) UnicastRemoteObject.exportObject(carRentalAgency, rmiPort);
-        System.out.println("Ready To register\n");
         //register the CarRentalAgency
         try {
             namingRegistry.rebind("CarRentals", stub);

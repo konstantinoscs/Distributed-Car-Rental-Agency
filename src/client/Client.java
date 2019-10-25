@@ -49,12 +49,8 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
 
         String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
 
-        int port = 10447;
-        if (localOrRemote == REMOTE) {
-            this.namingRegistry = LocateRegistry.getRegistry(host, port);
-        } else {
-            this.namingRegistry = LocateRegistry.getRegistry();
-        }
+        int registryPort = 10447;
+        this.namingRegistry = localOrRemote == REMOTE ? LocateRegistry.getRegistry(host, registryPort) : LocateRegistry.getRegistry();
 
         try {
             carAgency = (AgencyInterface) this.namingRegistry.lookup(carAgencyName);
@@ -66,28 +62,25 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
     @Override
     protected ReservationSession getNewReservationSession(String name) throws Exception {
         String reservationSessionId;
-        ReservationSession reservationSession;
         try {
             reservationSessionId = carAgency.getNewReservationSession(name);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get a new reservation session.");
         }
-        reservationSession = (ReservationSession) this.namingRegistry.lookup(reservationSessionId);
-        return reservationSession;
+        return (ReservationSession) this.namingRegistry.lookup(reservationSessionId);
     }
 
     @Override
     protected ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception {
         String managerSessionId;
-        ManagerSession managerSession;
         try {
-            managerSession = (ManagerSession) carAgency.getNewManagerSession(name, carRentalName);
+            managerSessionId = carAgency.getNewManagerSession(name, carRentalName);
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Couldn't get a new manager session.");
         }
-        return managerSession;
+        return (ManagerSession) this.namingRegistry.lookup(managerSessionId);
     }
 
     @Override

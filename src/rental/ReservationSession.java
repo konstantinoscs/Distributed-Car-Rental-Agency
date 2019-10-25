@@ -34,10 +34,7 @@ public class ReservationSession implements ReservationSessionInterface {
     }
 
     public void addQuoteToSession(String name, Date start, Date end, String carType, String region) throws Exception {
-        System.out.println("Made it here\n");
         Quote quote = this.carRentalAgency.createQuote(name, start, end, carType, region);
-        if (quote == null)
-            System.out.println("Null Quote");
         this.quotes.add(quote);
     }
 

@@ -14,6 +14,7 @@ public class CarRentalAgency implements AgencyInterface {
     private final static int REMOTE = 1;
     private final int rmiPort = 10448;
     private int agencySerialId;
+    private int managerSerialId;
     private Registry namingRegistry;
 
     private List<RentalInterface> carRentalCompanies;
@@ -21,6 +22,7 @@ public class CarRentalAgency implements AgencyInterface {
 
     public CarRentalAgency(List<String> carRentalCompanyNames, int localOrRemote) throws Exception {
         this.agencySerialId = 0;
+        this.managerSerialId = 0;
         String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
 
         int port = 10447;
@@ -64,8 +66,17 @@ public class CarRentalAgency implements AgencyInterface {
         return id;
     }
 
-    public ManagerSession getNewManagerSession(String name, String carRentalName) throws RemoteException {
-        return null;
+    public String getNewManagerSession(String name, String carRentalName) throws RemoteException {
+        ManagerSession managerSession = new ManagerSession();
+        ManagerSessionInterface stub = (ManagerSessionInterface) UnicastRemoteObject.exportObject(managerSession, this.rmiPort);
+        String id = "ManagerSession" + String.valueOf(this.managerSerialId);
+        this.managerSerialId++;
+        try {
+            namingRegistry.rebind(id, stub);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return id;
     }
 
     public Set<String> getBestClients(ManagerSession ms) throws RemoteException {
@@ -112,7 +123,6 @@ public class CarRentalAgency implements AgencyInterface {
         } catch (Exception e) {
             throw new Exception("Could not create quote.");
         }
-        System.out.println("Created constraints\n");
 
         for (RentalInterface company : carRentalCompanies) {
             try {
