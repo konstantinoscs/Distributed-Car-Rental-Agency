@@ -32,10 +32,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         // The first argument passed to the `main` method (if present)
         // indicates whether the application is run on the remote setup or not.
         int localOrRemote = (args.length == 1 && args[0].equals("REMOTE")) ? REMOTE : LOCAL;
-
         String carAgencyName = "CarRentals";
-
-        // An example reservation scenario on car rental company 'Hertz' would be...
         Client<ReservationSessionInterface, ManagerSessionInterface> client = new Client<>("trips", carAgencyName, localOrRemote);
         client.run();
     }
@@ -52,11 +49,8 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         int registryPort = 10447;
         this.namingRegistry = localOrRemote == REMOTE ? LocateRegistry.getRegistry(host, registryPort) : LocateRegistry.getRegistry();
 
-        try {
-            carAgency = (AgencyInterface) this.namingRegistry.lookup(carAgencyName);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        carAgency = (AgencyInterface) this.namingRegistry.lookup(carAgencyName);
+
     }
 
     @Override
@@ -65,7 +59,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             reservationSessionId = carAgency.getNewReservationSession(name);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new Exception("Couldn't get a new reservation session.");
         }
         return (ReservationSession) this.namingRegistry.lookup(reservationSessionId);
@@ -102,7 +96,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             carType = ms.getMostPopularCarTypeIn(carRentalCompanyName, year);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new Exception("Couldn't get the most popular car type.");
         }
         return carType;
@@ -114,7 +108,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             numberOfReservationsByRenter = ms.getNumberOfReservationsByRenter(clientName);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new Exception("Couldn't get the number of reservations by renter.");
         }
         return numberOfReservationsByRenter;
@@ -126,7 +120,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             numberOfReservationsForCarType = ms.getNumberOfReservationsForCarType(carRentalName, carType);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new Exception("Couldn't get the number of reservations for car type.");
         }
         return numberOfReservationsForCarType;
@@ -138,7 +132,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             cheapestCarType = session.getCheapestCarType(start, end, region);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new Exception("Couldn't get the cheapest car type.");
         }
         return cheapestCarType;
@@ -147,12 +141,14 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
 
     @Override
     protected void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception {
+        Set<CarType> carTypes;
         try {
-            session.checkForAvailableCarTypes(start, end);
+            carTypes = session.checkForAvailableCarTypes(start, end);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new Exception("Couldn't check for available car types.");
         }
+        carTypes.forEach(carType -> System.out.println(carType.toString()));
     }
 
     @Override
@@ -160,7 +156,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             session.addQuoteToSession(name, start, end, carType, region);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new Exception("Couldn't add quote to session.");
         }
     }
@@ -171,7 +167,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             reservations = session.confirmQuotes(name);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             throw new Exception("Couldn't confirm quotes.");
         }
         return reservations;

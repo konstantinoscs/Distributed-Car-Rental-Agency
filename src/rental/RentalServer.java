@@ -30,12 +30,8 @@ public class RentalServer {
         carRentalCompanies.add(createAndRegisterCarRentalCompany(namingRegistry, rmiPort, "dockx.csv"));
         CarRentalAgency carRentalAgency = new CarRentalAgency(carRentalCompanies, localOrRemote);
         AgencyInterface stub = (AgencyInterface) UnicastRemoteObject.exportObject(carRentalAgency, rmiPort);
-        //register the CarRentalAgency
-        try {
-            namingRegistry.rebind("CarRentals", stub);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //register the CarRentalAgency -- upon failure throws exception and terminates
+        namingRegistry.rebind("CarRentals", stub);
 
     }
 

@@ -6,7 +6,10 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class CarRentalAgency implements AgencyInterface {
@@ -17,7 +20,8 @@ public class CarRentalAgency implements AgencyInterface {
     private int managerSerialId;
     private Registry namingRegistry;
 
-    private List<RentalInterface> carRentalCompanies;
+    private Map<String, RentalInterface> carRentalCompanies;
+    //private List<RentalInterface> carRentalCompanies;
     private List<ReservationSession> reservationSessions;
 
     public CarRentalAgency(List<String> carRentalCompanyNames, int localOrRemote) throws Exception {
@@ -33,7 +37,7 @@ public class CarRentalAgency implements AgencyInterface {
             this.namingRegistry = LocateRegistry.getRegistry();
         }
 
-        this.carRentalCompanies = new ArrayList<>();
+        this.carRentalCompanies = new HashMap<>();
 
         //retrieve all the carRentalInterfaces from the registry
         for (String company : carRentalCompanyNames) {
@@ -41,11 +45,10 @@ public class CarRentalAgency implements AgencyInterface {
             try {
                 carRentalCompany = (RentalInterface) namingRegistry.lookup(company);
             } catch (Exception e){
-                e.printStackTrace();
+                //e.printStackTrace();
                 throw new Exception("Couldn't retrieve car rental company from registry.");
             }
-
-            carRentalCompanies.add(carRentalCompany);
+            carRentalCompanies.put(company, carRentalCompany);
         }
 
         reservationSessions = new ArrayList<>();
@@ -61,7 +64,7 @@ public class CarRentalAgency implements AgencyInterface {
         try {
             namingRegistry.rebind(id, stub);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return id;
     }
@@ -74,7 +77,7 @@ public class CarRentalAgency implements AgencyInterface {
         try {
             namingRegistry.rebind(id, stub);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return id;
     }
@@ -84,11 +87,24 @@ public class CarRentalAgency implements AgencyInterface {
     }
 
     public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
-        /*for (RentalInterface company : this.carRentalCompanies){
-            ReservationConstraints = new ReservationConstraints(start, end, region);
-            company.
-        }*/
-        return "";
+        int minPrice = Integer.MAX_VALUE;
+        String cheapestCarType = "";
+        Set<CarType> carTypes = this.checkForAvailableCarTypes(start, end);
+
+        return cheapestCarType;
+    }
+
+    /*private double getCheapestPriceForCarType(String carType, Date start, Date end, String region) throws RemoteException {
+        double minPrice = Double.MAX_VALUE;
+        for (RentalInterface company : this.carRentalCompanies.values()){
+            if (company)
+            double price =
+        }
+    }*/
+
+    private double calculateCarTypeRentalPrice(CarType carType, Date start, Date end) {
+        return carType.getRentalPricePerDay() * Math.ceil((end.getTime() - start.getTime())
+                / (1000 * 60 * 60 * 24D));
     }
 
     public CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) throws RemoteException {
@@ -104,8 +120,12 @@ public class CarRentalAgency implements AgencyInterface {
         return 0;
     }
 
-    public void checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
-
+    public Set<CarType> checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
+        Set<CarType> carTypes = new HashSet<>();
+        for (RentalInterface company : this.carRentalCompanies.values()) {
+            carTypes.addAll(company.getAvailableCarTypes(start, end));
+        }
+        return carTypes;
     }
 
     /*public void addQuoteToSession(String name, Date start, Date end, String carType, String region)
@@ -124,7 +144,7 @@ public class CarRentalAgency implements AgencyInterface {
             throw new Exception("Could not create quote.");
         }
 
-        for (RentalInterface company : carRentalCompanies) {
+        for (RentalInterface company : carRentalCompanies.values()) {
             try {
                 quote = company.createQuote(constraints, clientName);
             } catch (ReservationException e) {
@@ -138,11 +158,11 @@ public class CarRentalAgency implements AgencyInterface {
         return quote;
     }
 
-    public List<Reservation> confirmQuotes(String name) throws RemoteException {
-        /*List<Quote> quotes = session.getCurrentQuotes();
-        for(RentalInterface company : carRentalCompanies){
-            company.confirmQuote();
-        }*/
-        return null;
+    public List<Reservation> confirmQuotes(List<Quote> quotes) throws RemoteException, ReservationException {
+        List<Reservation> reservations = new ArrayList<>();
+        for (Quote quote : quotes) {
+            reservations.add(this.carRentalCompanies.get(quote.getRentalCompany()).confirmQuote(quote));
+        }
+        return reservations;
     }
 }

@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public class ReservationSession implements ReservationSessionInterface {
 
@@ -22,15 +23,17 @@ public class ReservationSession implements ReservationSessionInterface {
     }
 
     public List<Reservation> confirmQuotes(String name) throws ReservationException, RemoteException {
-        return this.carRentalAgency.confirmQuotes(this.clientName);
+        if (!this.clientName.equals(name))
+            throw new ReservationException("Wrong client name given!");
+        return this.carRentalAgency.confirmQuotes(this.quotes);
     }
 
     public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
         return this.carRentalAgency.getCheapestCarType(start, end, region);
     }
 
-    public void checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
-        this.carRentalAgency.checkForAvailableCarTypes(start, end);
+    public Set<CarType> checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
+        return this.carRentalAgency.checkForAvailableCarTypes(start, end);
     }
 
     public void addQuoteToSession(String name, Date start, Date end, String carType, String region) throws Exception {
