@@ -74,14 +74,14 @@ public class CarRentalCompany implements RentalInterface {
         return carTypes.values();
     }
 
-    public CarType getCarType(String carTypeName) {
+    public CarType getCarType(String carTypeName) throws IllegalArgumentException {
         if (carTypes.containsKey(carTypeName))
             return carTypes.get(carTypeName);
         throw new IllegalArgumentException("<" + carTypeName + "> No car type of name " + carTypeName);
     }
 
     // mark
-    public boolean isAvailable(String carTypeName, Date start, Date end) {
+    public boolean isAvailable(String carTypeName, Date start, Date end) throws IllegalArgumentException {
         logger.log(Level.INFO, "<{0}> Checking availability for car type {1}", new Object[]{name, carTypeName});
         if (carTypes.containsKey(carTypeName)) {
             return getAvailableCarTypes(start, end).contains(carTypes.get(carTypeName));
@@ -127,7 +127,7 @@ public class CarRentalCompany implements RentalInterface {
      ****************/
 
     public Quote createQuote(ReservationConstraints constraints, String client)
-            throws ReservationException {
+            throws ReservationException, IllegalArgumentException {
         logger.log(Level.INFO, "<{0}> Creating tentative reservation for {1} with constraints {2}",
                 new Object[]{name, client, constraints.toString()});
 

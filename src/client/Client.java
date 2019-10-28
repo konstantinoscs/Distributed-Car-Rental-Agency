@@ -156,7 +156,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             session.addQuoteToSession(name, start, end, carType, region);
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             throw new Exception("Couldn't add quote to session.");
         }
     }

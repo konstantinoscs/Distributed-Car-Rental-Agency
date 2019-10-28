@@ -19,4 +19,6 @@ public interface RentalInterface extends Remote {
     List<Reservation> getReservationsByRenter(String clientName) throws RemoteException;
 
     int getNumberOfReservationsForCarType(String carType) throws RemoteException;
+
+    boolean operatesInRegion(String region) throws RemoteException;
 }

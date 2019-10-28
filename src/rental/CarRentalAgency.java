@@ -86,27 +86,6 @@ public class CarRentalAgency implements AgencyInterface {
         return null;
     }
 
-    public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
-        int minPrice = Integer.MAX_VALUE;
-        String cheapestCarType = "";
-        Set<CarType> carTypes = this.checkForAvailableCarTypes(start, end);
-
-        return cheapestCarType;
-    }
-
-    /*private double getCheapestPriceForCarType(String carType, Date start, Date end, String region) throws RemoteException {
-        double minPrice = Double.MAX_VALUE;
-        for (RentalInterface company : this.carRentalCompanies.values()){
-            if (company)
-            double price =
-        }
-    }*/
-
-    private double calculateCarTypeRentalPrice(CarType carType, Date start, Date end) {
-        return carType.getRentalPricePerDay() * Math.ceil((end.getTime() - start.getTime())
-                / (1000 * 60 * 60 * 24D));
-    }
-
     public CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) throws RemoteException {
         return null;
     }
@@ -118,6 +97,25 @@ public class CarRentalAgency implements AgencyInterface {
     public int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType)
             throws RemoteException {
         return 0;
+    }
+
+    public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
+        double minPrice = Double.MAX_VALUE;
+        String cheapestCarType = "";
+        for (RentalInterface company : carRentalCompanies.values()) {
+            if (!company.operatesInRegion(region)) {
+                continue;
+            }
+            Set<CarType> carTypes = company.getAvailableCarTypes(start, end);
+            for (CarType carType : carTypes) {
+                if (carType.getRentalPricePerDay() < minPrice) {
+                    minPrice = carType.getRentalPricePerDay();
+                    cheapestCarType = carType.getName();
+                }
+            }
+
+        }
+        return cheapestCarType;
     }
 
     public Set<CarType> checkForAvailableCarTypes(Date start, Date end) throws RemoteException {
@@ -132,7 +130,7 @@ public class CarRentalAgency implements AgencyInterface {
             throws RemoteException {
     }*/
 
-    protected Quote createQuote(String clientName, Date start, Date end, String carType, String region)
+    public Quote createQuote(String clientName, Date start, Date end, String carType, String region)
             throws Exception {
         ReservationConstraints constraints;
         Quote quote = null;
@@ -147,7 +145,7 @@ public class CarRentalAgency implements AgencyInterface {
         for (RentalInterface company : carRentalCompanies.values()) {
             try {
                 quote = company.createQuote(constraints, clientName);
-            } catch (ReservationException e) {
+            } catch (ReservationException | IllegalArgumentException e) {
                 continue;
             }
             break;
@@ -158,10 +156,20 @@ public class CarRentalAgency implements AgencyInterface {
         return quote;
     }
 
-    public List<Reservation> confirmQuotes(List<Quote> quotes) throws RemoteException, ReservationException {
+    public List<Reservation> confirmQuotes(List<Quote> quotes) throws RemoteException {
         List<Reservation> reservations = new ArrayList<>();
         for (Quote quote : quotes) {
-            reservations.add(this.carRentalCompanies.get(quote.getRentalCompany()).confirmQuote(quote));
+            Reservation reservation = null;
+            try {
+                reservation = this.carRentalCompanies.get(quote.getRentalCompany()).confirmQuote(quote);
+            } catch (ReservationException e) {
+                // if one reservation failed, cancel them all
+                for (Reservation res : reservations) {
+                    this.carRentalCompanies.get(res.getRentalCompany()).cancelReservation(res);
+                }
+                throw new RemoteException("Couldn't confirm quotes");
+            }
+            reservations.add(reservation);
         }
         return reservations;
     }
