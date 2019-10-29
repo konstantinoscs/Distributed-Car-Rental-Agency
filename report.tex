@@ -1,0 +1,54 @@
+\documentclass{ds-report}
+
+\assignment{Java RMI} % Set to `Java RMI`, `Java EE` or `Google App Engine`.
+\authorOne{Konstantinos Stefanidis Vozikis} % Name of first team partner.
+\studentnumberOne{r0123456} % Student number of first team partner.
+\authorTwo{Sofie Landuyt} % Name of second team partner.
+\studentnumberTwo{r1234567}  % Student number of second team partner.
+
+\begin{document}
+	\maketitle
+
+	\paragraph{How would a client complete one full cycle of the booking process, for both a successful and
+failed case? Base yourself on the example scenarios in Figure 1. Create sequence drawings to
+illustrate this.\\} 
+	Answer 1
+	
+	\paragraph{When do classes need to be serializable? You may illustrate this with an example class.\\} 
+	A class needs to be serializable when an object of that class has to be transferred over a network. To illustrate this, we serialize the CarType class because it is the return type of a method of the ManagerSessionInterface.
+	
+	\paragraph{When do classes need to be remotely accessible (Remote)? You may illustrate this with  an example class.\\} 
+	A class needs to be remotely accessible when certain methods of this class should be available to a client on another machine.
+	Our AgencyInterface is remotely accessible, this way the Client class can invoke methods of the CarRentalAgency class that implements AgencyInterface.
+	
+	\paragraph{What data has to be transmitted between client and server and back when requesting the number
+of reservations of a specific renter?\\}
+	First, the client has to request new manager session.
+	The data that is transmitted here is a ManagerSessionInterface from the Car Rental Agency server to the Client.
+	Then, the client name is being transmitted from the client to the same server.
+	After this, the Car Rental Agency queries the individual Car Companies. Now, the client name is being transmitted from the Car Rental Agency to every car company.
+	The Car Companies each send their result, an integer, to the Car Rental Agency and then the Car Rental Agency sends the total result to the Client.
+	
+	
+	\paragraph{What is the reasoning behind your distribution of remote objects over hosts? Show which
+hosts execute which classes, if run in a real distributed deployment (not a lab deployment where everything runs on the same machine). Create a component/deployment diagram to illustrate this: highlight where the client and server are.\\}
+	Answer 5
+	
+	\paragraph{How have you implemented the naming service, and what role does the built-in RMI registry play? Why did you take this approach?\\}
+	Answer 6
+	
+	\paragraph{Which approach did you take to achieve life cycle management of sessions? Indicate why you picked this approach, in particular where you store the sessions.\\}
+	
+		
+	\paragraph{Why is a Java RMI application not thread-safe by default? How does your application of synchronization achieve thread-safety?\\}
+	Answer 8
+	
+	\paragraph{How does your solution to concurrency control affect the scalability of your design? Could synchronization become a bottleneck?\\}
+	Answer 9
+	
+	\clearpage
+
+	
+	% You can include diagrams here.
+	
+\end{document}
