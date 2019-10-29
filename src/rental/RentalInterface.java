@@ -1,10 +1,11 @@
 package rental;
 
-import java.rmi.*;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
 
 public interface RentalInterface extends Remote {
     Set<CarType> getAvailableCarTypes(Date start, Date end) throws RemoteException;
@@ -21,4 +22,8 @@ public interface RentalInterface extends Remote {
     int getNumberOfReservationsForCarType(String carType) throws RemoteException;
 
     boolean operatesInRegion(String region) throws RemoteException;
+
+    Map<String, Integer> getClientsWithReservations() throws RemoteException;
+
+    int getNoOfReservationsByRenter(String clientName) throws RemoteException;
 }

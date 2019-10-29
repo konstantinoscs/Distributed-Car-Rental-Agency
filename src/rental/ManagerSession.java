@@ -1,18 +1,18 @@
 package rental;
 
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Set;
 
 public class ManagerSession implements ManagerSessionInterface {
+    private CarRentalAgency carRentalAgency;
 
-    public ManagerSession() {
-
+    public ManagerSession(CarRentalAgency carRentalAgency) {
+        this.carRentalAgency = carRentalAgency;
     }
 
     @Override
-    public Set<String> getBestClients() {
-        return new HashSet<>();
+    public Set<String> getBestClients() throws RemoteException {
+        return this.carRentalAgency.getBestClients();
     }
 
     @Override
@@ -21,12 +21,12 @@ public class ManagerSession implements ManagerSessionInterface {
     }
 
     @Override
-    public int getNumberOfReservationsByRenter(String clientName) {
-        return 0;
+    public int getNumberOfReservationsByRenter(String clientName) throws RemoteException {
+        return this.carRentalAgency.getNumberOfReservationsByRenter(clientName);
     }
 
     @Override
-    public int getNumberOfReservationsForCarType(String carRentalName, String carType) {
-        return 0;
+    public int getNumberOfReservationsForCarType(String carRentalName, String carType) throws Exception {
+        return this.carRentalAgency.getNumberOfReservationsForCarType(carRentalName, carType);
     }
 }

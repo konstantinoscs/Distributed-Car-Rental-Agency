@@ -5,12 +5,14 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CarRentalAgency implements AgencyInterface {
 
@@ -21,8 +23,6 @@ public class CarRentalAgency implements AgencyInterface {
     private Registry namingRegistry;
 
     private Map<String, RentalInterface> carRentalCompanies;
-    //private List<RentalInterface> carRentalCompanies;
-    private List<ReservationSession> reservationSessions;
 
     public CarRentalAgency(List<String> carRentalCompanyNames, int localOrRemote) throws Exception {
         this.agencySerialId = 0;
@@ -50,59 +50,70 @@ public class CarRentalAgency implements AgencyInterface {
             }
             carRentalCompanies.put(company, carRentalCompany);
         }
-
-        reservationSessions = new ArrayList<>();
-        
     }
 
     //return stub identifier as String
     public String getNewReservationSession(String name) throws RemoteException {
         ReservationSession reservationSession = new ReservationSession(this, name);
         ReservationSessionInterface stub = (ReservationSessionInterface) UnicastRemoteObject.exportObject(reservationSession, this.rmiPort);
-        String id = "ReservationSession" + String.valueOf(this.agencySerialId);
-        this.agencySerialId++;
-        try {
-            namingRegistry.rebind(id, stub);
-        } catch (Exception e) {
-            //e.printStackTrace();
-        }
+        String id = "ReservationSession" + String.valueOf(this.agencySerialId++);
+        //an exception will be thrown here if something goes wrong and we want this behavior
+        namingRegistry.rebind(id, stub);
         return id;
     }
 
     public String getNewManagerSession(String name, String carRentalName) throws RemoteException {
-        ManagerSession managerSession = new ManagerSession();
+        ManagerSession managerSession = new ManagerSession(this);
         ManagerSessionInterface stub = (ManagerSessionInterface) UnicastRemoteObject.exportObject(managerSession, this.rmiPort);
-        String id = "ManagerSession" + String.valueOf(this.managerSerialId);
-        this.managerSerialId++;
-        try {
-            namingRegistry.rebind(id, stub);
-        } catch (Exception e) {
-            //e.printStackTrace();
-        }
+        String id = "ManagerSession" + String.valueOf(this.managerSerialId++);
+        //an exception will be thrown here if something goes wrong and we want this behavior
+        namingRegistry.rebind(id, stub);
         return id;
     }
 
-    public Set<String> getBestClients(ManagerSession ms) throws RemoteException {
+    public Set<String> getBestClients() throws RemoteException {
+        Map<String, Integer> reservations = new HashMap<>();
+        for (RentalInterface company : carRentalCompanies.values()) {
+            updateMap(reservations, company.getClientsWithReservations());
+        }
+        Integer max = Collections.max(reservations.entrySet(), Map.Entry.comparingByValue()).getValue();
+        // after we found the max, get all clients that have max number of reservations
+        return reservations.entrySet().stream()
+                .filter(e -> e.getValue().equals(max))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
+    }
+
+    //update reservations with the contents of tempReservations by adding the new data
+    private void updateMap(Map<String, Integer> reservations, Map<String, Integer> tempReservations) {
+        for (Map.Entry<String, Integer> entry : tempReservations.entrySet()) {
+            reservations.put(entry.getKey(), reservations.getOrDefault(entry.getKey(), 0) + entry.getValue());
+        }
+    }
+
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws RemoteException {
         return null;
     }
 
-    public CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) throws RemoteException {
-        return null;
+    public int getNumberOfReservationsByRenter(String clientName) throws RemoteException {
+        int noOfReservations = 0;
+        for (RentalInterface company : this.carRentalCompanies.values()) {
+            noOfReservations += company.getNoOfReservationsByRenter(clientName);
+        }
+        return noOfReservations;
     }
 
-    public int getNumberOfReservationsByRenter(ManagerSession ms, String clientName) throws RemoteException {
-        return 0;
-    }
+    public int getNumberOfReservationsForCarType(String carRentalName, String carType) throws Exception {
+        if (!this.carRentalCompanies.containsKey(carRentalName))
+            throw new Exception("Requested Car Rental Company is not registered!");
 
-    public int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType)
-            throws RemoteException {
-        return 0;
+        return this.carRentalCompanies.get(carRentalName).getNumberOfReservationsForCarType(carType);
     }
 
     public String getCheapestCarType(Date start, Date end, String region) throws RemoteException {
         double minPrice = Double.MAX_VALUE;
         String cheapestCarType = "";
-        for (RentalInterface company : carRentalCompanies.values()) {
+        for (RentalInterface company : this.carRentalCompanies.values()) {
             if (!company.operatesInRegion(region)) {
                 continue;
             }

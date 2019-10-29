@@ -11,5 +11,5 @@ public interface ManagerSessionInterface extends Remote {
 
     int getNumberOfReservationsByRenter(String clientName) throws RemoteException;
 
-    int getNumberOfReservationsForCarType(String carRentalName, String carType) throws RemoteException;
+    int getNumberOfReservationsForCarType(String carRentalName, String carType) throws Exception;
 }

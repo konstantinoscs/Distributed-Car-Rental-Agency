@@ -1,7 +1,5 @@
 package rental;
 
-import java.rmi.*;
-import java.rmi.server.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -179,6 +177,10 @@ public class CarRentalCompany implements RentalInterface {
         return reservations;
     }
 
+    public int getNoOfReservationsByRenter(String clientName) {
+        return this.getReservationsByRenter(clientName).size();
+    }
+
     public int getNumberOfReservationsForCarType(String carType) {
         int noOfReservations = 0;
         for (Car car : cars) {
@@ -187,6 +189,18 @@ public class CarRentalCompany implements RentalInterface {
             }
         }
         return noOfReservations;
+    }
+
+    public Map<String, Integer> getClientsWithReservations() {
+        Map<String, Integer> reservations = new HashMap<>();
+        for (Car car : cars) {
+            for (Reservation reservation : car.getReservations()) {
+                String client = reservation.getCarRenter();
+                Integer prev = reservations.getOrDefault(client, 0);
+                reservations.put(client, prev + 1);
+            }
+        }
+        return reservations;
     }
 
     @Override
