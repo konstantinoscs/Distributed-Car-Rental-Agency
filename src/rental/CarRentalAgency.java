@@ -27,7 +27,6 @@ public class CarRentalAgency implements AgencyInterface {
     public CarRentalAgency(List<String> carRentalCompanyNames, int localOrRemote) throws Exception {
         this.agencySerialId = 0;
         this.managerSerialId = 0;
-        String host = localOrRemote == REMOTE ? "192.168.104.76" : "127.0.0.1";
 
         int port = 10447;
         if(localOrRemote == REMOTE ) {
