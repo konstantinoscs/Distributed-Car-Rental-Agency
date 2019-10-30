@@ -94,14 +94,8 @@ public class CarRentalAgency implements AgencyInterface {
     public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception {
         if (!this.carRentalCompanies.containsKey(carRentalCompanyName))
             throw new Exception("Requested Car Rental Company is not registered!");
-        CarType result;
-        try {
-            result = this.carRentalCompanies.get(carRentalCompanyName).getMostPopularCarTypeIn(year);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new Exception("Exception");
-        }
-        return result;
+
+        return this.carRentalCompanies.get(carRentalCompanyName).getMostPopularCarTypeIn(year);
     }
 
     public int getNumberOfReservationsByRenter(String clientName) throws RemoteException {
