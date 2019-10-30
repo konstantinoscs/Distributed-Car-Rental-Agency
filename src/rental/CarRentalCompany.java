@@ -164,7 +164,7 @@ public class CarRentalCompany implements RentalInterface {
                 / (1000 * 60 * 60 * 24D));
     }
 
-    public Reservation confirmQuote(Quote quote) throws ReservationException {
+    public synchronized Reservation confirmQuote(Quote quote) throws ReservationException {
         logger.log(Level.INFO, "<{0}> Reservation of {1}", new Object[]{name, quote.toString()});
         List<Car> availableCars = getAvailableCars(quote.getCarType(), quote.getStartDate(), quote.getEndDate());
         if (availableCars.isEmpty())

@@ -56,7 +56,10 @@ public class CarRentalAgency implements AgencyInterface {
     public String getNewReservationSession(String name) throws RemoteException {
         ReservationSession reservationSession = new ReservationSession(this, name);
         ReservationSessionInterface stub = (ReservationSessionInterface) UnicastRemoteObject.exportObject(reservationSession, this.rmiPort);
-        String id = "ReservationSession" + String.valueOf(this.agencySerialId++);
+        String id;
+        synchronized (this) {   //ensure that serialId is unique for every remote object
+            id = "ReservationSession" + String.valueOf(this.agencySerialId++);
+        }
         //an exception will be thrown here if something goes wrong and we want this behavior
         namingRegistry.rebind(id, stub);
         return id;
@@ -65,7 +68,10 @@ public class CarRentalAgency implements AgencyInterface {
     public String getNewManagerSession(String name, String carRentalName) throws RemoteException {
         ManagerSession managerSession = new ManagerSession(this);
         ManagerSessionInterface stub = (ManagerSessionInterface) UnicastRemoteObject.exportObject(managerSession, this.rmiPort);
-        String id = "ManagerSession" + String.valueOf(this.managerSerialId++);
+        String id;
+        synchronized (this) {   //ensure that serialId is unique for every remote object
+            id = "ManagerSession" + String.valueOf(this.managerSerialId++);
+        }
         //an exception will be thrown here if something goes wrong and we want this behavior
         namingRegistry.rebind(id, stub);
         return id;
