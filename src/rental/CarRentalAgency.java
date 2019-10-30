@@ -31,7 +31,7 @@ public class CarRentalAgency implements AgencyInterface {
 
         int port = 10447;
         if(localOrRemote == REMOTE ) {
-            this.namingRegistry = LocateRegistry.getRegistry(host, port);
+            this.namingRegistry = LocateRegistry.getRegistry(port);
         }
         else {
             this.namingRegistry = LocateRegistry.getRegistry();
