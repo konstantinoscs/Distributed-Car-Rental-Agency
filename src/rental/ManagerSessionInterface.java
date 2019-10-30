@@ -7,7 +7,7 @@ import java.util.Set;
 public interface ManagerSessionInterface extends Remote {
     Set<String> getBestClients() throws RemoteException;
 
-    CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws RemoteException;
+    CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception;
 
     int getNumberOfReservationsByRenter(String clientName) throws RemoteException;
 

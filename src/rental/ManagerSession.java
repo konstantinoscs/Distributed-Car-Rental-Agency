@@ -16,8 +16,8 @@ public class ManagerSession implements ManagerSessionInterface {
     }
 
     @Override
-    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) {
-        return null;
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception {
+        return this.carRentalAgency.getMostPopularCarTypeIn(carRentalCompanyName, year);
     }
 
     @Override

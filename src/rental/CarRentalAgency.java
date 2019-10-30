@@ -91,8 +91,17 @@ public class CarRentalAgency implements AgencyInterface {
         }
     }
 
-    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws RemoteException {
-        return null;
+    public CarType getMostPopularCarTypeIn(String carRentalCompanyName, int year) throws Exception {
+        if (!this.carRentalCompanies.containsKey(carRentalCompanyName))
+            throw new Exception("Requested Car Rental Company is not registered!");
+        CarType result;
+        try {
+            result = this.carRentalCompanies.get(carRentalCompanyName).getMostPopularCarTypeIn(year);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Exception");
+        }
+        return result;
     }
 
     public int getNumberOfReservationsByRenter(String clientName) throws RemoteException {
@@ -136,10 +145,6 @@ public class CarRentalAgency implements AgencyInterface {
         }
         return carTypes;
     }
-
-    /*public void addQuoteToSession(String name, Date start, Date end, String carType, String region)
-            throws RemoteException {
-    }*/
 
     public Quote createQuote(String clientName, Date start, Date end, String carType, String region)
             throws Exception {

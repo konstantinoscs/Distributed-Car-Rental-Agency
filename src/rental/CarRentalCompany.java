@@ -2,6 +2,8 @@ package rental;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -96,6 +98,21 @@ public class CarRentalCompany implements RentalInterface {
             }
         }
         return availableCarTypes;
+    }
+
+    public CarType getMostPopularCarTypeIn(int year) {
+        Map<CarType, Integer> carTypeReservations = new HashMap<>();
+        for (Car car : cars) {
+            for (Reservation reservation : car.getReservations()) {
+                if (reservation.getStartDate().getYear() + 1900 == year) {
+                    Integer prev = carTypeReservations.getOrDefault(car.getType(), 0);
+                    carTypeReservations.put(car.getType(), prev + 1);
+                }
+            }
+        }
+        if (carTypeReservations.isEmpty())
+            return null;
+        return Collections.max(carTypeReservations.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
     }
 
     /*********

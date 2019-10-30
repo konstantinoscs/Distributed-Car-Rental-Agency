@@ -26,4 +26,6 @@ public interface RentalInterface extends Remote {
     Map<String, Integer> getClientsWithReservations() throws RemoteException;
 
     int getNoOfReservationsByRenter(String clientName) throws RemoteException;
+
+    CarType getMostPopularCarTypeIn(int year) throws RemoteException;
 }
