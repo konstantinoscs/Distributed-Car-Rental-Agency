@@ -59,7 +59,7 @@ public class Client<ReservationSession extends ReservationSessionInterface, Mana
         try {
             reservationSessionId = carAgency.getNewReservationSession(name);
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
             throw new Exception("Couldn't get a new reservation session.");
         }
         return (ReservationSession) this.namingRegistry.lookup(reservationSessionId);
