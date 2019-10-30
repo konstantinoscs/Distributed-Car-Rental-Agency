@@ -21,7 +21,7 @@
     <property name="server.mainClass"
               value="RentalServer"/>  <!-- Main class of server package (contains client `main` method) -->
 
-    <property name="zip.filename" value="rmi2.ADDFIRSTNAME.ADDLASTNAME"/>  <!-- Name of zip file -->
+    <property name="zip.filename" value="rmi2.Konstantinos.Cs"/>  <!-- Name of zip file -->
 
     <!--
     *************************************************************
@@ -29,12 +29,12 @@
        using the remote setup to test your application.
     ************************************************************* -->
 
-    <property name="remote.endpoint" value="ENDPOINT_IP"/>  <!-- Remote server: endpoint IP -->
-    <property name="remote.username" value="USERNAME"/>  <!-- Remote server: username -->
-    <property name="remote.password" value="PASSWORD"/>  <!-- Remote server: password -->
+    <property name="remote.endpoint" value="192.168.104.76:8080"/>  <!-- Remote server: endpoint IP -->
+    <property name="remote.username" value="rmi090"/>  <!-- Remote server: username -->
+    <property name="remote.password" value="2VT8A2GH6I"/>  <!-- Remote server: password -->
 
-    <property name="remote.startRegistry" value="false"/>  <!-- Remote server: start RMI registry or not -->
-    <property name="remote.registryPort" value="0"/>  <!-- Remote server: on which port to start RMI registry -->
+    <property name="remote.startRegistry" value="true"/>  <!-- Remote server: start RMI registry or not -->
+    <property name="remote.registryPort" value="10447"/>  <!-- Remote server: on which port to start RMI registry -->
 
     <!--
     ********************************************************
