@@ -1,5 +1,6 @@
 package rental;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,11 +9,13 @@ import java.util.Set;
 
 public class ReservationSession implements ReservationSessionInterface {
 
-    private CarRentalAgency carRentalAgency;
+    private final String id;
+    private final CarRentalAgency carRentalAgency;
     private List<Quote> quotes;
-    private String clientName;
+    private final String clientName;
 
-    public ReservationSession(CarRentalAgency carRentalAgency, String clientName) {
+    public ReservationSession(String id, CarRentalAgency carRentalAgency, String clientName) {
+        this.id = id;
         this.carRentalAgency = carRentalAgency;
         this.quotes = new ArrayList<>();
         this.clientName = clientName;
@@ -41,6 +44,8 @@ public class ReservationSession implements ReservationSessionInterface {
         this.quotes.add(quote);
     }
 
-
-
+    @Override
+    public void closeReservationSession() throws RemoteException, NotBoundException {
+        this.carRentalAgency.closeReservationSession(this.id);
+    }
 }

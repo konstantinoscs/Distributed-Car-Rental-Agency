@@ -1,5 +1,6 @@
 package rental;
 
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Set;
@@ -12,4 +13,6 @@ public interface ManagerSessionInterface extends Remote {
     int getNumberOfReservationsByRenter(String clientName) throws RemoteException;
 
     int getNumberOfReservationsForCarType(String carRentalName, String carType) throws Exception;
+
+    void closeManagerSession() throws RemoteException, NotBoundException;
 }

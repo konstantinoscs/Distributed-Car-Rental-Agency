@@ -1,5 +1,6 @@
 package rental;
 
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -23,10 +24,14 @@ public class CarRentalAgency implements AgencyInterface {
     private Registry namingRegistry;
 
     private Map<String, RentalInterface> carRentalCompanies;
+    private Map<String, ReservationSession> reservationSessions;
+    private Map<String, ManagerSession> managerSessions;
 
     public CarRentalAgency(List<String> carRentalCompanyNames, int localOrRemote) throws Exception {
         this.agencySerialId = 0;
         this.managerSerialId = 0;
+        this.reservationSessions = new HashMap<>();
+        this.managerSessions = new HashMap<>();
 
         int port = 10447;
         if(localOrRemote == REMOTE ) {
@@ -53,27 +58,45 @@ public class CarRentalAgency implements AgencyInterface {
 
     //return stub identifier as String
     public String getNewReservationSession(String name) throws RemoteException {
-        ReservationSession reservationSession = new ReservationSession(this, name);
-        ReservationSessionInterface stub = (ReservationSessionInterface) UnicastRemoteObject.exportObject(reservationSession, this.rmiPort);
         String id;
         synchronized (this) {   //ensure that serialId is unique for every remote object
             id = "ReservationSession" + String.valueOf(this.agencySerialId++);
         }
+        ReservationSession reservationSession = new ReservationSession(id, this, name);
+        ReservationSessionInterface stub = (ReservationSessionInterface) UnicastRemoteObject.exportObject(reservationSession, this.rmiPort);
         //an exception will be thrown here if something goes wrong and we want this behavior
-        namingRegistry.rebind(id, stub);
+        this.namingRegistry.rebind(id, stub);
+        this.reservationSessions.put(id, reservationSession);
         return id;
     }
 
+    public void closeReservationSession(String sessionId) throws RemoteException, NotBoundException {
+        if (!this.reservationSessions.containsKey(sessionId))
+            throw new RemoteException("Trying to close an inexistent reservationSession");
+        this.namingRegistry.unbind(sessionId);
+        UnicastRemoteObject.unexportObject(this.reservationSessions.get(sessionId), false);
+        this.reservationSessions.remove(sessionId);
+    }
+
     public String getNewManagerSession(String name, String carRentalName) throws RemoteException {
-        ManagerSession managerSession = new ManagerSession(this);
-        ManagerSessionInterface stub = (ManagerSessionInterface) UnicastRemoteObject.exportObject(managerSession, this.rmiPort);
         String id;
         synchronized (this) {   //ensure that serialId is unique for every remote object
             id = "ManagerSession" + String.valueOf(this.managerSerialId++);
         }
+        ManagerSession managerSession = new ManagerSession(id, this);
+        ManagerSessionInterface stub = (ManagerSessionInterface) UnicastRemoteObject.exportObject(managerSession, this.rmiPort);
         //an exception will be thrown here if something goes wrong and we want this behavior
-        namingRegistry.rebind(id, stub);
+        this.namingRegistry.rebind(id, stub);
+        this.managerSessions.put(id, managerSession);
         return id;
+    }
+
+    public void closeManagerSession(String managerId) throws RemoteException, NotBoundException {
+        if (!this.managerSessions.containsKey(managerId))
+            throw new RemoteException("Trying to close an inexistent managerSession");
+        this.namingRegistry.unbind(managerId);
+        UnicastRemoteObject.unexportObject(this.managerSessions.get(managerId), false);
+        this.managerSessions.remove(managerId);
     }
 
     public Set<String> getBestClients() throws RemoteException {
@@ -182,6 +205,7 @@ public class CarRentalAgency implements AgencyInterface {
                 for (Reservation res : reservations) {
                     this.carRentalCompanies.get(res.getRentalCompany()).cancelReservation(res);
                 }
+                // after we cancel the reservations already made, throw an exception (we are in a clean state
                 throw new RemoteException("Couldn't confirm quotes");
             }
             reservations.add(reservation);

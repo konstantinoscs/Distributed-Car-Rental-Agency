@@ -1,6 +1,7 @@
 package rental;
 
 import java.io.Serializable;
+import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -15,4 +16,6 @@ public interface ReservationSessionInterface extends Remote, Serializable {
     void addQuoteToSession(String name, Date start, Date end, String carType, String region) throws Exception;
 
     List<Reservation> confirmQuotes(String name) throws ReservationException, RemoteException;
+
+    void closeReservationSession() throws RemoteException, NotBoundException;
 }
