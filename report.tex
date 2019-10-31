@@ -56,10 +56,19 @@ hosts execute which classes, if run in a real distributed deployment (not a lab 
     On our application, thread safety is achieved by enforcing synchronization in the appropriate parts of the code. More specifically, to avoid
     naming inconsistencies we block the access to the critical section of the id retrieval and incrementing the serialId of the manager and reservations sessions.
     That way, every id that is produced is unique and no two different objects will be bound to the same id in the registry.
-    Also synchronization is implemented in the confirmQuote method of the individual CarRentalCompanies.
-	
+    Also synchronization is implemented in the confirmQuote method of the individual CarRentalCompanies. As a design choice we adopted
+    the synchronization only on the level of each individual company rather than the agency. This will be discussed on the next paragraph.
+
 	\paragraph{How does your solution to concurrency control affect the scalability of your design? Could synchronization become a bottleneck?\\}
-	Answer 9
+    Currently we adopted synchronization only on the level of confirmQuote method of the CarRentalCompany. This solution allows a
+    good scalability because there is no bottleneck caused on the confirmQuotes method of the Agency as it allows concurrent access.
+    A drawback of this, is that the confirmation of quotes is happening on a more "chaotic" way and thus, there is a bigger probability
+    that confirming the quotes the fail especially if there are many clients and if the number of quotes they want to confirm is large.
+    An alternative design we considered, would be to synchronize the confirmation of quotes on the level of the agency itself. This
+    would give us a a higher rate of success on the confirmation of quotes but on the other hand it would lead to a bottleneck as
+    more clients confirm their quotes.
+    On a real life scenario, the choice between the two would have to be based on studying of traffic or discussion with some project
+    manager etc.
 	
 	\clearpage
 
