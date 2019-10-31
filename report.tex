@@ -2,7 +2,7 @@
 
 \assignment{Java RMI} % Set to `Java RMI`, `Java EE` or `Google App Engine`.
 \authorOne{Konstantinos Stefanidis Vozikis} % Name of first team partner.
-\studentnumberOne{r0123456} % Student number of first team partner.
+\studentnumberOne{r0776192} % Student number of first team partner.
 \authorTwo{Sofie Landuyt} % Name of second team partner.
 \studentnumberTwo{r1234567}  % Student number of second team partner.
 
@@ -35,13 +35,28 @@ hosts execute which classes, if run in a real distributed deployment (not a lab 
 	Answer 5
 	
 	\paragraph{How have you implemented the naming service, and what role does the built-in RMI registry play? Why did you take this approach?\\}
-	Answer 6
+    The naming service is provided by the CarRentalAgency Class. The class starts naming manager and reservation sessions it provides in the form of
+    \[Reservation/ManagerSession\] + a serial id it keeps for both sessions. In that way every session has a unique identifier which is transmitted to
+    the client and enables him to lookup the remote object in the registry. The built-in RMI registry binds the objects with the identifier the CarRentalAgency
+    indicates on the server side and then is used to lookup the objects using the same identifier on the client side.\\
+    This approach was adopted in order to make the application more distributed and more lightweight. By not serializing the whole sessions and passing them
+    to the client we achieved a more lightweight approach and for that reason the naming service had to be implemented on the basis of
+    passing identifiers over the network so the clients can retrieve the remote objects on their side.
 	
 	\paragraph{Which approach did you take to achieve life cycle management of sessions? Indicate why you picked this approach, in particular where you store the sessions.\\}
+    When a session is created, it is exported on a specified RMI port and its id is bound on the registry. The objects live in the server side
+    and the CarRentalAgency class also keeps an index of the created sessions. When a client closes the session, the CarRentalAgency method responsible,
+    unbinds the name from the RMI registry and then unexports the object. Afterwards it removes the session from its internal index.
+    Since no remote or local reference to the object exists anymore, the object will be destroyed on the next garbage collection.
 	
 		
 	\paragraph{Why is a Java RMI application not thread-safe by default? How does your application of synchronization achieve thread-safety?\\}
-	Answer 8
+    RMI specification does not give any guarantees about different invokations to the same object being executed on the same or different threads
+    thus it is not thread-safe by default (https://docs.oracle.com/javase/8/docs/platform/rmi/spec/rmi-arch3.html). \\
+    On our application, thread safety is achieved by enforcing synchronization in the appropriate parts of the code. More specifically, to avoid
+    naming inconsistencies we block the access to the critical section of the id retrieval and incrementing the serialId of the manager and reservations sessions.
+    That way, every id that is produced is unique and no two different objects will be bound to the same id in the registry.
+    Also synchronization is implemented in the confirmQuote method of the individual CarRentalCompanies.
 	
 	\paragraph{How does your solution to concurrency control affect the scalability of your design? Could synchronization become a bottleneck?\\}
 	Answer 9
