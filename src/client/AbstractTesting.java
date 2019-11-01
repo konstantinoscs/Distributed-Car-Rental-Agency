@@ -12,13 +12,13 @@ import java.util.StringTokenizer;
 
 /**
  * Small scriptable testing system. Reads a scenario from file and executes it.
- * <p>
+ * 
  * A line in this file is either a comment (starts with #) or has this syntax:
  * <clientName> <command+flags> <p1> <p2> <p3> <p..>
- * <p>
+ * 
  * The command+flags parameter contains upper case characters to set a command and lower
- * case parameters to set a flag.
- * <p>
+ * case parameters to set a flag. 
+ * 
  * This file only provides the framework for a scripted testing. Subclasses are expected
  * to implement individual commands in the the processLine method.
  */

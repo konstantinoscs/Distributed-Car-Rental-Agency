@@ -31,10 +31,12 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
      * Find a cheapest car type that is available in the given period and region.
      *
      * @param session the session to do the request from
-     * @param start   start time of the period
-     * @param end     end time of the period
-     * @param region  region of interest (if null, no limitation by region)
+     * @param start start time of the period
+     * @param end end time of the period
+     * @param region region of interest (if null, no limitation by region)
+     *
      * @return name of a cheapest car type for the given period
+     *
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract String getCheapestCarType(ReservationSession session, Date start,
@@ -43,10 +45,11 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
     /**
      * Get the most popular car type in the given car rental company.
      *
-     * @param ms                   manager session
-     * @param year                 year in question
-     * @param carRentalCompanyName The name of the car rental company.
+     * @param ms manager session
+     * @param    carRentalCompanyName The name of the car rental company.
+     * @param year year in question
      * @return the most popular car type in the given car rental company
+     *
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract CarType getMostPopularCarTypeIn(ManagerSession ms, String carRentalCompanyName, int year) throws Exception;
@@ -85,7 +88,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
         }
 
         if (cmd.equals("MB")) {
-            Set<String> bestClientsShouldBe = new HashSet<String>(Arrays.asList(name.split("/")));
+            Set<String> bestClientsShouldBe = new HashSet<String>(Arrays.asList(scriptLineTokens.nextToken().split("/")));
             Set<String> bestClientsAre = null;
             try {
                 ManagerSession aMgmtSession = getNewManagerSession("CarRent", name);
@@ -123,7 +126,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
                     throw new ApplicationException(e1);
                 }
             }
-
+            
             List<String> typeNameShoudBe = Arrays.asList(scriptLineTokens
                     .nextToken().toLowerCase().split("/"));
 
@@ -135,7 +138,7 @@ public abstract class AbstractTestManagement<ReservationSession, ManagerSession>
             } catch (Exception e) {
                 throw new ApplicationException(e);
             }
-
+			
             if (typeNameIs != null && typeNameShoudBe.contains(typeNameIs.toLowerCase())) {
                 System.out.println("A cheapest car type is: " + typeNameIs);
             } else {

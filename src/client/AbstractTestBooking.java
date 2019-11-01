@@ -21,6 +21,7 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
      *
      * @param name name of the client (renter) owning this session
      * @return the new reservation session
+     *
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract ReservationSession getNewReservationSession(String name) throws Exception;
@@ -28,9 +29,10 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
     /**
      * Create a new manager session for the user with the given name.
      *
-     * @param name          name of the user (i.e. manager) using this session
+     * @param name name of the user (i.e. manager) using this session
      * @param carRentalName name of the rental company managed by this session
      * @return the new manager session
+     *
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract ManagerSession getNewManagerSession(String name, String carRentalName) throws Exception;
@@ -39,8 +41,9 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
      * Check which car types are available in the given period and print them.
      *
      * @param session the session to do the request from
-     * @param start   start time of the period
-     * @param end     end time of the period
+     * @param start start time of the period
+     * @param end end time of the period
+     *
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract void checkForAvailableCarTypes(ReservationSession session, Date start, Date end) throws Exception;
@@ -49,12 +52,13 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
      * Add a quote for a given car type to the session.
      *
      * @param session the session to add the reservation to
-     * @param name    the name of the client owning the session
-     * @param start   start time of the reservation
-     * @param end     end time of the reservation
+     * @param name the name of the client owning the session
+     * @param start start time of the reservation
+     * @param end end time of the reservation
      * @param carType type of car to be reserved
-     * @param region  region for which the car shall be reserved
-     *                should be done
+     * @param region region for which the car shall be reserved
+     * should be done
+     *
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract void addQuoteToSession(ReservationSession session, String name,
@@ -64,7 +68,8 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
      * Confirm the quotes in the given session.
      *
      * @param session the session to finalize
-     * @param name    the name of the client owning the session
+     * @param name the name of the client owning the session
+     *
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract List<Reservation> confirmQuotes(ReservationSession session, String name) throws Exception;
@@ -73,10 +78,11 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
      * Get the number of reservations made by the given renter (across whole
      * rental agency).
      *
+     * @param    ms manager session
      * @param clientName name of the renter
-     * @param ms         manager session
      * @return the number of reservations of the given client (across whole
      * rental agency)
+     *
      * @throws Exception if things go wrong, throw exception
      */
     protected abstract int getNumberOfReservationsByRenter(ManagerSession ms, String clientName) throws Exception;
@@ -84,13 +90,14 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
     /**
      * Get the number of reservations for a particular car type.
      *
-     * @param ms            manager session
+     * @param ms manager session
      * @param carRentalName name of the rental company managed by this session
-     * @param carType       name of the car type
+     * @param carType name of the car type
      * @return number of reservations for this car type
+     *
      * @throws Exception if things go wrong, throw exception
      */
-    protected abstract int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception;
+    protected abstract int getNumberOfReservationsForCarType(ManagerSession ms, String carRentalName, String carType) throws Exception;    
 
     public AbstractTestBooking(String scriptFile) {
         super(scriptFile);
@@ -102,28 +109,29 @@ public abstract class AbstractTestBooking<ReservationSession, ManagerSession> ex
     protected Map<String, ReservationSession> sessions = new HashMap<String, ReservationSession>();
 
     /**
+     * 
      * This class supports the following script commands
-     * (note that additional commands can be supported by extending this class) :
-     * <p>
-     * BA <from> <until>
+     * (note that additional commands can be supported by extending this class) :  
+     *
+     * BA <from> <until> 
      * Check availability of car types from <from> until <until>
-     * <p>
+     * 
      * BB <from> <until> <carType>    (command)
      * Create a quote for <client> for a car of type <carType> from <from> until <until>
-     * <p>
+     * 
      * BF
      * Finalize the quote made for client <client>
-     * <p>
+     * 
      * BM <type:nr>*
      * Assess total number of reservations comparing it to <type:nr>*
-     * <p>
+     * 
      * BMR
      * Print all reservations of a client
-     * <p>
-     * BS
-     * Create a reservation session
-     * <p>
-     * c
+     *
+     * BS 
+     * Create a reservation session  
+     *
+     * c 
      * Modifier to indicate that the according command will fail
      */
     protected void processLine(String name, String cmd, List<Character> flags, StringTokenizer scriptLineTokens) throws ApplicationException {
