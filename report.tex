@@ -1,4 +1,5 @@
 \documentclass{ds-report}
+\usepackage{float}
 
 \assignment{Java RMI} % Set to `Java RMI`, `Java EE` or `Google App Engine`.
 \authorOne{Konstantinos Stefanidis Vozikis} % Name of first team partner.
@@ -12,7 +13,9 @@
 	\paragraph{How would a client complete one full cycle of the booking process, for both a successful and
 failed case? Base yourself on the example scenarios in Figure 1. Create sequence drawings to
 illustrate this.\\} 
-The sequence diagram of the successful case can be found in the zip file under ''successfulSequenceDiagram''. It's not in the report itself for readability of the diagram. The sequence diagram of the failed case can be found in the zip file under ''failedSequenceDiagram''. The diagram is based on a scenario where the second client tries to rent a specific car that was available at the beginning of the session but while making the reservation some other client rented it first, making the car unavailable.
+There are two sequence diagrams. The first one, see Figure 1, displays a successful scenario. The second one, see Figure 2, is a possible outcome of a failed case. The diagram is based on a scenario where the second client tries to rent a specific car that was available at the beginning of the session but while making the reservation some other client rented it first, making the car unavailable.
+The two diagrams are also included in the zip-file for extra readability.
+
 
 	
 	\paragraph{When do classes need to be serializable? You may illustrate this with an example class.\\} 
@@ -34,9 +37,7 @@ of reservations of a specific renter?\\}
 	\paragraph{What is the reasoning behind your distribution of remote objects over hosts? Show which
 hosts execute which classes, if run in a real distributed deployment (not a lab deployment where everything runs on the same machine). Create a component/deployment diagram to illustrate this: highlight where the client and server are.\\}
 	The rental server is responsible for giving the rental agency access to the car companies' information. The client can make reservations through the rental agency.
-	\begin{figure}[h]
-	\includegraphics[scale=0.5]{deploymentDiagram}
-	\end{figure}	
+
 	
 	\paragraph{How have you implemented the naming service, and what role does the built-in RMI registry play? Why did you take this approach?\\}
     The naming service is provided by the CarRentalAgency Class. The class starts naming manager and reservation sessions it provides in the form of
@@ -73,6 +74,26 @@ hosts execute which classes, if run in a real distributed deployment (not a lab 
     more clients confirm their quotes.
     On a real life scenario, the choice between the two would have to be based on studying of traffic or discussion with some project
     manager etc.
+    
+    \begin{figure}[t]
+    \centering
+    	\caption{Sequence diagram for a succesful case}
+	\includegraphics[scale=0.85]{successfulSequenceDiagram}
+
+	\end{figure}
+	
+	\begin{figure}[t]
+		\centering
+		\caption{Sequence diagram for a failed case}
+	\includegraphics[scale=0.9]{failedSequenceDiagram}
+	\end{figure}
+	
+	\begin{figure}[t]
+	\centering
+		\caption{Deployment diagram}
+	\includegraphics[scale=0.5]{deploymentDiagram}
+
+	\end{figure}	
 	
 	\clearpage
 
