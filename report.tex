@@ -12,7 +12,8 @@
 	\paragraph{How would a client complete one full cycle of the booking process, for both a successful and
 failed case? Base yourself on the example scenarios in Figure 1. Create sequence drawings to
 illustrate this.\\} 
-	Answer 1
+The sequence diagram of the successful case can be found in the zip file under ''successfulSequenceDiagram''. It's not in the report itself for readability of the diagram. The sequence diagram of the failed case can be found in the zip file under ''failedSequenceDiagram''. The diagram is based on a scenario where the second client tries to rent a specific car that was available at the beginning of the session but while making the reservation some other client rented it first, making the car unavailable.
+
 	
 	\paragraph{When do classes need to be serializable? You may illustrate this with an example class.\\} 
 	A class needs to be serializable when an object of that class has to be transferred over a network. To illustrate this, we serialize the CarType class because it is the return type of a method of the ManagerSessionInterface.
@@ -32,7 +33,10 @@ of reservations of a specific renter?\\}
 	
 	\paragraph{What is the reasoning behind your distribution of remote objects over hosts? Show which
 hosts execute which classes, if run in a real distributed deployment (not a lab deployment where everything runs on the same machine). Create a component/deployment diagram to illustrate this: highlight where the client and server are.\\}
-	Answer 5
+	The rental server is responsible for giving the rental agency access to the car companies' information. The client can make reservations through the rental agency.
+	\begin{figure}[h]
+	\includegraphics[scale=0.5]{deploymentDiagram}
+	\end{figure}	
 	
 	\paragraph{How have you implemented the naming service, and what role does the built-in RMI registry play? Why did you take this approach?\\}
     The naming service is provided by the CarRentalAgency Class. The class starts naming manager and reservation sessions it provides in the form of
