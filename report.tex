@@ -1,5 +1,6 @@
 \documentclass{ds-report}
 \usepackage{float}
+\usepackage{hyperref}
 
 \assignment{Java RMI} % Set to `Java RMI`, `Java EE` or `Google App Engine`.
 \authorOne{Konstantinos Stefanidis Vozikis} % Name of first team partner.
@@ -57,7 +58,7 @@ hosts execute which classes, if run in a real distributed deployment (not a lab 
 		
 	\paragraph{Why is a Java RMI application not thread-safe by default? How does your application of synchronization achieve thread-safety?\\}
     RMI specification does not give any guarantees about different invokations to the same object being executed on the same or different threads
-    thus it is not thread-safe by default (https://docs.oracle.com/javase/8/docs/platform/rmi/spec/rmi-arch3.html). \\
+    thus it is not thread-safe by default ( \url{https://docs.oracle.com/javase/8/docs/platform/rmi/spec/rmi-arch3.html}). \\
     On our application, thread safety is achieved by enforcing synchronization in the appropriate parts of the code. More specifically, to avoid
     naming inconsistencies we block the access to the critical section of the id retrieval and incrementing the serialId of the manager and reservations sessions.
     That way, every id that is produced is unique and no two different objects will be bound to the same id in the registry.
